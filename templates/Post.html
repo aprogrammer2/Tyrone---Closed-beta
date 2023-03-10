@@ -1,0 +1,32 @@
+<html lang="EN">
+<head>
+    <meta name="name" content="Tyrone">
+    <meta name="description" content="A simple friendly social platform to talk, and hangout.">
+    <meta name="viewport">
+    <title>Tyrone!</title>
+    <script>
+        function Like(ID){
+            var XMLHTTP = new XMLHttpRequest()
+            XMLHTTP.open("GET","/like/" + ID)
+            XMLHTTP.send()
+        }
+        function Dislike(ID){
+            var XMLHTTP = new XMLHttpRequest()
+            XMLHTTP.open("GET","/dislike/" + ID)
+            XMLHTTP.send()
+        }
+    </script>
+</head>
+<body>
+{% if Post != "Post not found" %}
+<div id="{{Post['ID']}}">
+    <image src="/user/{{Post['Handle']}}/image" style="height: 25px; width: 34px; float: left; padding: 5px;" alt="{{Post['Handle']}}"></image><p style="float: center;"><b>{{Post['Username']}}(@{{Post['Handle']}})</b></p>
+    <p>{{Post["Content"]}}</p>
+    {% if showdeleted %}
+    <p><i>This post was hidden/deleted. Only you can view it.</i></p>
+    {% endif%}
+    <button onclick="Like({{Post['ID']}})">Like</button> <button onclick="Dislike({{Post['ID']}})">Dislike</button>
+</div>
+{% endif %}
+</body>
+</html>

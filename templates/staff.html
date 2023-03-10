@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+    <head>
+    <title>Staff Dashboard - Tyrone</title>
+    <script>
+            function RedirectToUser(Handle){
+                location = '/user/' + Handle
+            }
+            function RedirectToPost(ID){
+                location = "/post/" + ID    
+            }
+            function BlockUserReports(Handle,ID){
+                var XMLHTTP = new XMLHttpRequest()
+                XMLHTTP.open("GET","/staff/blockreport/" + Handle + "/" + ID)
+                XMLHTTP.send()
+            }
+            function RestrictUserReports(Handle,ID){
+                var XMLHTTP = new XMLHttpRequest()
+                XMLHTTP.open("GET","/staff/restictreport/" + Handle + "/" + ID)
+                XMLHTTP.send()
+            }
+            function AbsolvePost(ID){
+                var XMLHTTP = new XMLHttpRequest()
+                XMLHTTP.open("GET","/staff/absolvepost/" + ID)
+                XMLHTTP.send()
+            }
+            function HidePost(ID){
+                var XMLHTTP = new XMLHttpRequest()
+                XMLHTTP.open("GET","/staff/hidepost/" + ID)
+                XMLHTTP.send()
+            }
+            function TerminateUser(Handle,reason){
+                var XMLHTTP = new XMLHttpRequest()
+                XMLHTTP.open("GET","/staff/terminate/" + Handle + "/" + reason)
+                XMLHTTP.send()
+                XMLHTTP.onload = function (){
+                    alert("State of termination: "  + XMLHTTP.responseText)
+                }
+            }
+            function ProcessTermination(Handle){
+                var confirmation = confirm("Are you sure you want to terminate " + Handle + "?")
+                if (confirmation == true){
+                    var reason = prompt("What is the reason of termination?")
+                    TerminateUser(Handle,reason)
+                }
+
+            }
+    </script>
+    </head>
+    <body>
+        {% for Report in ModQueue%}
+        <p onclick="RedirectToPost(`{{Report['ID']}}`)" style="float: left;">{{Report["Content"]}}</p> <p style="float: center;"><b onclick="RedirectToUser(`{{Report['Handle']}}`)" >{{Report['Username']}}(@{{Report['Handle']}})</b></p>
+        <p><i>Reported by {{Report["Reporter"]}}</i></p>
+        {% if Report["ReportPhase"] == "PendingReview" %}
+        <button onclick="BlockUserReports(`{{Report['Reporter']}}`,`{{Report['ID']}}`)">Block User Reports</button><button onclick="RestrictUserReports(`{{Report['Reporter']}}`,`{{Report['ID']}}`)">Restrict User Reports</button><button onclick="ApproveReport(`{{Report['ID']}}`)">Approve Report</button>
+        {% endif %}
+        {% if Report["ReportPhase"] == "PendingAction" %}
+        <button onclick="HidePost(`{{Report['ID']}}`)">Hide Post</button><button onclick="ProcessTermination(`{{Report['Handle']}}`,`{{Report['ID']}}`)">Terminate User</button><button onclick="AbsolvePost(`{{Report['ID']}}`)">No Action Needed</button>
+        {%endif%}
+        {%endfor%}
+    </body>
+</html>

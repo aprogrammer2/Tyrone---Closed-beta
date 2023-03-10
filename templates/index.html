@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="EN">
+    <head>
+        <meta name="name" content="Tyrone">
+        <meta name="description" content="A simple friendly social platform to talk, and hangout.">
+        <meta name="viewport">
+        <title>Tyrone!</title>
+        <script>
+            function RedirectToUser(Handle){
+                location = '/user/' + Handle
+            }
+            function RedirectToPost(ID){
+                location = "/post/" + ID    
+            }
+            function Like(ID){
+                var XMLHTTP = new XMLHttpRequest()
+                XMLHTTP.open("GET","/like/" + ID)
+                XMLHTTP.send()
+            }
+            function Dislike(ID){
+                var XMLHTTP = new XMLHttpRequest()
+                XMLHTTP.open("GET","/dislike/" + ID)
+                XMLHTTP.send()
+            }
+            function Report(ID){
+                var XMLHTTP = new XMLHttpRequest()
+                XMLHTTP.open("GET","/report/" + ID)
+                XMLHTTP.send() 
+                XMLHTTP.onload = function (){
+                    alert(XMLHTTP.responseText)
+                }
+            }
+        </script>
+    </head>
+    <body>
+    {% if Username%}
+    <p>You are logged in as {{Username}} This is how you <a href="/logout">Logout</a>.</p>
+    {% endif %}
+    {% if not Username and "SID" in request.cookies%}
+    <a href="/login">Login.</a>
+    {% endif %}
+    {% if "SID" not in request.cookies%}
+    <a href="/join">Create an Account.</a>
+    {% endif%}
+    {% if Permissions != "USER" and Username %}
+    <a href="/staff/dashboard">Staff Dashboard</a>
+    {%endif%}
+    {% if Username and not Banned%}
+    <button onclick="location='/post'">Post</button>
+    {% endif %}
+    {% if Username and PostFeed%}
+    {% for Post in PostFeed%}
+    {% if PostFeed[Post]['Available']%}
+    <div id="{{PostFeed[Post]['ID']}}">
+        <image src="/user/{{Handle}}/image" onclick="RedirectToUser('{{Handle}}')" style="height: 25px; width: 34px; float: left; padding: 5px;" alt="{{Handle}}"></image><p style="float: center;"><b onclick="RedirectToUser('{{Handle}}')" >{{Username}}(@{{Handle}})</b></p>
+        <p onclick="RedirectToPost(`{{PostFeed[Post]['ID']}}`)" >{{PostFeed[Post]["Content"]}}</p>
+        <button onclick="Like({{PostFeed[Post]['ID']}})">Like</button> <button onclick="Dislike({{PostFeed[Post]['ID']}})">Dislike</button><button onclick="Report({{PostFeed[Post]['ID']}})">Report</button>
+    </div>
+    {%endif%}
+    {% endfor %}
+    <div id="EndFeed">
+        <p style="color: grey;" onclick="location=location"><i>End of Feed; Reload</i></p>
+    </div>
+    {% endif %}
+    </body>
+    </html>

@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="EN">
+    <head>
+        <meta name="name" content="Tyrone">
+        <meta name="description" content="A simple friendly social platform to talk, and hangout.">
+        <meta name="viewport">
+        <title>Tyrone!</title>
+        <script>
+            function RedirectToUser(Handle){
+                location = '/user/' + Handle
+            }
+            function RedirectToPost(ID){
+                location = "/post/" + ID    
+            }
+            function Like(ID){
+                var XMLHTTP = new XMLHttpRequest()
+                XMLHTTP.open("GET","/like/" + ID)
+                XMLHTTP.send()
+            }
+            function Dislike(ID){
+                var XMLHTTP = new XMLHttpRequest()
+                XMLHTTP.open("GET","/dislike/" + ID)
+                XMLHTTP.send()
+            }
+        </script>
+    </head>
+    <image src="/user/{{Handle}}/image" style="height: 25px; width: 34px; float: left; padding: 10px;"></image>
+    <p>{{Handle}}'s Profile Page</p>
+    {% for Post in Posts%}
+    {% if Posts[Post]["Available"]%}
+    <div id="{{Posts[Post]['ID']}}">
+        <image src="/user/{{Handle}}/image" onclick="RedirectToUser('{{Handle}}')" style="height: 25px; width: 34px; float: left; padding: 5px;" alt="{{Handle}}"></image><p style="float: center;"><b onclick="RedirectToUser('{{Handle}}')" >{{Username}}(@{{Handle}})</b></p>
+        <p onclick="RedirectToPost(`{{Posts[Post]['ID']}}`)" >{{Posts[Post]["Content"]}}</p>
+        <button onclick="Like({{Posts[Post]['ID']}})">Like</button> <button onclick="Dislike({{Posts[Post]['ID']}})">Dislike</button>
+    </div>
+    {%endif%}
+    {% endfor %}
+</html>
